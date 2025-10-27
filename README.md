@@ -34,8 +34,6 @@ Users can create, manage, and filter job listings, as well as save their favorit
 - **JavaScript (Vanilla)** – Dynamic content management  
 - **Google Fonts (League Spartan)** – Custom typography  
 
----
 
-## 📁 Project Structure
 
 
