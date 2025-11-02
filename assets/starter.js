@@ -291,24 +291,64 @@ document.addEventListener('DOMContentLoaded', () => {
      * @function renderFavoriteJobs
      */
     const renderFavoriteJobs = () => {
-        // TODO: Implement favorites rendering
-        // 1. Filter jobs by favorite IDs
-        // 2. Use createJobCardHTML for each job
-        // 3. Show empty message if no favorites
+        const favoriteBtn = document.getElementsByClassName('job-card__favorite-btn')
+        const addedBtn = document.getElementsByClassName('job-card__favorite-btn job-card__favorite-btn--active')
+        for (let btn of favoriteBtn) {
+            btn.addEventListener("click", (e) => {
+                let favId = Number(e.target.getAttribute("data-job-id"))
+                console.log('favId')
+                toggleFavorite(favId, e);
+            })
+        }
+        // for (let btn of addedBtn) {
+        //     btn.addEventListener("click", (e) => {
+        //         let favId = Number(e.target.getAttribute("job-card__favorite-btn job-card__favorite-btn--active"))
+        //         console.log('favId')
+        //         toggleFavorite(favId, e);
+        //         console.log(work)
+        //     })
+        // }
     };
+    // TODO: Implement favorites rendering
+    // 1. Filter jobs by favorite IDs
+    // 2. Use createJobCardHTML for each job
+    // 3. Show empty message if no favorites
 
     /**
      * Toggles job favorite status
      * @function toggleFavorite
      * @param {number} jobId - Job ID to toggle
      */
-    const toggleFavorite = (jobId) => {
-        // TODO: Implement favorite toggle
-        // 1. Check if job is already favorite
-        // 2. Add or remove from favorites array
-        // 3. Save to localStorage
-        // 4. Update UI
+    const toggleFavorite = (jobId, e) => {
+
+        if(favoriteJobIds.includes(jobId) ) {
+             favoriteJobIds = favoriteJobIds.filter(id => id !== jobId )
+             e.currentTarget.classList.remove("job-card__favorite-btn--active")
+             console.log("remove")
+             const fav = document.querySelector(`[data-job-id="${jobId}"]`)
+             if(fav){
+                fav.remove();
+             }
+             let count = document.getElementById('favorites-count')
+            count.innerText = favoriteJobIds.length
+        
+        }else{
+                e.target.classList.add("job-card__favorite-btn--active")
+            favoriteJobIds.push(jobId)
+            favoriteJobsContainer.innerHTML += createJobCardHTML(allJobs[jobId-1])
+            console.log("add")
+            let count = document.getElementById('favorites-count')
+            count.innerText = favoriteJobIds.length
+            console.log(favoriteJobIds.length)
+        }
+        
+
     };
+    // TODO: Implement favorite toggle
+    // 1. Check if job is already favorite
+    // 2. Add or remove from favorites array
+    // 3. Save to localStorage
+    // 4. Update UI
 
     // ------------------------------------
     // --- TAB NAVIGATION ---
@@ -508,6 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
         jobListingsContainer.innerHTML = jobsToRender.length > 0
             ? jobsToRender.map(createJobCardHTML).join('')
             : '<p class="job-listings__empty">No jobs match your search.</p>';
+            // renderFavoriteJobs()
     };
 
     /**
@@ -543,12 +584,28 @@ document.addEventListener('DOMContentLoaded', () => {
      * @function applyAllFilters
      */
     const applyAllFilters = () => {
-        // TODO: Implement comprehensive filtering
-        // 1. Get search term
-        // 2. Combine profile skills and manual filters
-        // 3. Filter jobs by tags and search term
-        // 4. Update all UI components
+        loadAllJobs();
+        searchInput.addEventListener("input", (val) => {
+        const input = val.target.value;
+        console.log(input);
+
+        const fitred = allJobs.filter((tmp) => 
+            
+            tmp.company.toLowerCase().includes(input.toLowerCase()) ||
+            tmp.position.toLowerCase().includes(input.toLowerCase()) ||
+            tmp.skills.find(skil => 
+                 skil.toLowerCase().includes(input.toLowerCase())
+            )
+        )
+        renderJobs(fitred);
+    })
+
     };
+    // TODO: Implement comprehensive filtering
+    // 1. Get search term
+    // 2. Combine profile skills and manual filters
+    // 3. Filter jobs by tags and search term
+    // 4. Update all UI components
 
     // ------------------------------------
     // --- EVENT HANDLERS ---
@@ -560,6 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {Event} e - Click event
      */
     const handleJobListClick = (e) => {
+        
         // TODO: Implement job list click handling
         // 1. Handle tag clicks (add to filters)
         // 2. Handle favorite button clicks
@@ -572,10 +630,16 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {Event} e - Click event
      */
     const handleFilterBarClick = (e) => {
-        // TODO: Implement filter removal
-        // Handle clicks on filter tag remove buttons
-    };
-
+       
+        const btn = document.getElementById('clear-filters')
+            btn.addEventListener("click",()=>{
+                searchInput.value = '';
+                renderJobs(allJobs); 
+           })
+    }
+    handleFilterBarClick()
+    // TODO: Implement filter removal
+    // Handle clicks on filter tag remove buttons
     /**
      * Clears all manual filters
      * @function handleClearFilters
