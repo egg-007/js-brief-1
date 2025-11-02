@@ -162,9 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Check required fields
         // 2. Show errors if invalid
         // 3. Return validation result
-        return true;
     };
-
+    
     /**
      * Validates the job management form
      * @function validateJobForm
@@ -203,13 +202,23 @@ document.addEventListener('DOMContentLoaded', () => {
      * @function renderProfileSkills
      */
     const renderProfileSkills = () => {
-        // TODO: Implement skills rendering
-        // Use this HTML template for each skill:
-        // `<li class="profile-skill-tag" data-skill="${skill}">
-        //     <span>${skill}</span>
-        //     <button class="profile-skill-remove" aria-label="Remove skill ${skill}">✕</button>
-        //  </li>`
+        const skill = skillInput.value.trim(); //trim to remove spices
+        if (skill !== ""){
+            userProfile.skills.push(skill);
+            profileSkillsList.innerHTML += `<li class="profile-skill-tag" data-skill="${skill}">
+            <span>${skill}</span>
+            <button class="profile-skill-remove" aria-label="Remove skill ${skill}">✕</button>
+            </li>`;
+            skillInput.value = "";
+        }
     };
+    
+    // TODO: Implement skills rendering
+    // Use this HTML template for each skill:
+    // `<li class="profile-skill-tag" data-skill="${skill}">
+    //     <span>${skill}</span>
+    //     <button class="profile-skill-remove" aria-label="Remove skill ${skill}">✕</button>
+    //  </li>`
 
     /**
      * Renders profile form with saved data
@@ -238,12 +247,21 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {KeyboardEvent} e - Keydown event
      */
     const handleSkillAdd = (e) => {
-        // TODO: Implement skill addition on Enter key
-        // 1. Check if Enter key was pressed
-        // 2. Get skill value
-        // 3. Add to profile if not duplicate
-        // 4. Re-render skills and apply filters
+        let ekey = e.key;
+        let addSkill = e.target.value.trim().toLowerCase()
+        if(ekey == "Enter"){
+            e.preventDefault()
+            if(addSkill !== "" && !userProfile.skills.some(elem => elem.trim().toLowerCase() === addSkill)){
+                renderProfileSkills()
+                e.target.value = ""
+            }
+        }
     };
+    // TODO: Implement skill addition on Enter key
+    // 1. Check if Enter key was pressed
+    // 2. Get skill value
+    // 3. Add to profile if not duplicate
+    // 4. Re-render skills and apply filters
 
     /**
      * Handles removing skills
@@ -251,12 +269,17 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {Event} e - Click event
      */
     const handleSkillRemove = (e) => {
-        // TODO: Implement skill removal
-        // 1. Find clicked remove button
-        // 2. Get skill name
-        // 3. Remove from profile
-        // 4. Re-render and apply filters
+        if(e.target.classList.contains('profile-skill-remove')){
+            e.preventDefault()
+            const skillItem = e.target.closest('.profile-skill-tag')
+            skillItem.remove()
+        }
     };
+    // TODO: Implement skill removal
+    // 1. Find clicked remove button
+    // 2. Get skill name
+    // 3. Remove from profile
+    // 4. Re-render and apply filters
 
     // ------------------------------------
     // --- FAVORITES MANAGEMENT ---
@@ -341,9 +364,9 @@ document.addEventListener('DOMContentLoaded', () => {
             count.innerText = favoriteJobIds.length
             console.log(favoriteJobIds.length)
         }
-        
-
     };
+        
+        
     // TODO: Implement favorite toggle
     // 1. Check if job is already favorite
     // 2. Add or remove from favorites array
@@ -691,13 +714,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Initial job display
         renderJobs(allJobs);
-        
         // TODO: Add remaining event listeners
         // Profile events
         // Filter events  
         // Job list events
     };
-
+    skillInput.addEventListener('keydown', handleSkillAdd)
+    profileSkillsList.addEventListener('click', handleSkillRemove);
+    
     // Start the application
     initializeApp();
 });
